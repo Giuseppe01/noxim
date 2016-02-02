@@ -78,6 +78,8 @@ class GlobalStats {
     // Returns the total power
     double getTotalPower() { return getDynamicPower()+getStaticPower(); }
 
+    void drawGraphviz();
+
     // Shows global statistics
     void showStats(std::ostream & out = std::cout, bool detailed = false);
 

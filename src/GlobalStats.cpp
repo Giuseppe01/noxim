@@ -295,6 +295,50 @@ double GlobalStats::getStaticPower()
     return power;
 }
 
+void GlobalStats::drawGraphviz()
+{
+  FILE * fp;
+  string fn = "graph.gv";
+
+
+  if ( (fp = fopen(fn.c_str(),"w"))!= NULL)
+  {
+    // draw the network layout and declare nodes
+    fprintf(fp,"\n digraph G { graph [layout=dot] ");
+
+    int c=0;
+    for (int y = 0; y < GlobalParams::mesh_dim_y; y++)
+    {
+      fprintf(fp,"\n {rank=same; ");
+      for (int x = 0; x < GlobalParams::mesh_dim_x; x++)
+      {
+        c++;
+        fprintf(fp,"N%d [shape=circle, fixedsize=true]; ", c);
+
+      }
+      fprintf(fp," }");
+    }
+
+
+    fprintf(fp,"\n }");
+    fclose(fp);
+    char cmd[200];
+    sprintf(cmd,"dot -Tpng -o %s.png %s",fn.c_str(),fn.c_str());
+    cout << cmd << endl;
+      system(cmd);
+
+
+    sprintf(cmd,"xdg-open %s.png",fn.c_str());
+    cout << cmd << endl;
+    system(cmd);
+  }
+  else
+  {
+    cout << "\n Cannot write output graphwiz file...";
+  }
+
+}
+
 void GlobalStats::showStats(std::ostream & out, bool detailed)
 {
     if (detailed) {
@@ -332,12 +376,8 @@ void GlobalStats::showStats(std::ostream & out, bool detailed)
 	showWirxStats(out);
     }
 
-    int total_cycles = GlobalParams::simulation_time - GlobalParams::stats_warm_up_time;
     out << "% Total received packets: " << getReceivedPackets() << endl;
     out << "% Total received flits: " << getReceivedFlits() << endl;
-    out << "% Received/Ideal flits Ratio: " << getReceivedFlits()
-	/ (GlobalParams::packet_injection_rate * (GlobalParams::min_packet_size +
-		GlobalParams::max_packet_size)/2 * total_cycles * GlobalParams::mesh_dim_y * GlobalParams::mesh_dim_x) << endl;
     out << "% Average wireless utilization: " << getWirelessPackets()/(double)getReceivedPackets() << endl;
     out << "% Global average delay (cycles): " << getAverageDelay() << endl;
     out << "% Max delay (cycles): " << getMaxDelay() << endl;
@@ -434,9 +474,9 @@ void GlobalStats::showWirxStats(std::ostream & out)
 		    bttoff_str+="o";
 	    else if (bttoff_fraction<0.90)
 		    bttoff_str+="O";
-	    else 
+	    else
 		bttoff_str+="0";
-	    
+
 
 	}
 	out << (double)s/h->buffer_to_tile_poweroff_cycles.size()/total_cycles << "\t" << bttoff_str << endl;
@@ -472,10 +512,10 @@ void GlobalStats::showPowerBreakDown(std::ostream & out)
 	map<int,Hub*>::const_iterator i = noc->hub.find(hub_id);
 	Hub * h = i->second;
 
-	    updatePowerBreakDown(power_dynamic, 
+	    updatePowerBreakDown(power_dynamic,
 		h->power.getDynamicPowerBreakDown());
 
-	    updatePowerBreakDown(power_static, 
+	    updatePowerBreakDown(power_static,
 		h->power.getStaticPowerBreakDown());
     }
 

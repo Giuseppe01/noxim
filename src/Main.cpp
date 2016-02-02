@@ -34,7 +34,7 @@ void signalHandler( int signum )
 
 int sc_main(int arg_num, char *arg_vet[])
 {
-    signal(SIGQUIT, signalHandler);  
+    signal(SIGQUIT, signalHandler);
 
     // TEMP
     drained_volume = 0;
@@ -105,7 +105,7 @@ int sc_main(int arg_num, char *arg_vet[])
     // Show statistics
     GlobalStats gs(n);
     gs.showStats(std::cout, GlobalParams::detailed);
-
+    gs.drawGraphviz();
 
     if ((GlobalParams::max_volume_to_be_drained > 0) &&
 	(sc_time_stamp().to_double() / GlobalParams::clock_period_ps - GlobalParams::reset_time >=
@@ -122,11 +122,7 @@ int sc_main(int arg_num, char *arg_vet[])
 	     << endl
          << " Effective drained volume: " << drained_volume;
 #endif
-
     }
 
-#ifdef DEADLOCK_AVOIDANCE
-	cout << "***** WARNING: DEADLOCK_AVOIDANCE ENABLED!" << endl;
-#endif
     return 0;
 }
