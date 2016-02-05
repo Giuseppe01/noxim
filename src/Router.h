@@ -39,8 +39,8 @@ SC_MODULE(Router)
     sc_in_clk clock;		                  // The input clock for the router
     sc_in <bool> reset;                           // The reset signal for the router
 
-    // number of ports: 4 mesh directions + local + wireless 
-    sc_in <Flit> flit_rx[DIRECTIONS + 2];	  // The input channels 
+    // number of ports: 4 mesh directions + local + wireless
+    sc_in <Flit> flit_rx[DIRECTIONS + 2];	  // The input channels
     sc_in <bool> req_rx[DIRECTIONS + 2];	  // The requests associated with the input channels
     sc_out <bool> ack_rx[DIRECTIONS + 2];	  // The outgoing ack signals associated with the input channels
 
@@ -63,7 +63,7 @@ SC_MODULE(Router)
     int local_id;		                // Unique ID
     int routing_type;		                // Type of routing algorithm
     int selection_type;
-    Buffer buffer[DIRECTIONS + 2];	        // Buffer for each input channel 
+    Buffer buffer[DIRECTIONS + 2];	        // Buffer for each input channel
     bool current_level_rx[DIRECTIONS + 2];	// Current level for Alternating Bit Protocol (ABP)
     bool current_level_tx[DIRECTIONS + 2];	// Current level for Alternating Bit Protocol (ABP)
     Stats stats;		                // Statistics
@@ -72,9 +72,9 @@ SC_MODULE(Router)
     ReservationTable reservation_table;	// Switch reservation table
     int start_from_port;	                // Port from which to start the reservation cycle
     unsigned long routed_flits;
-    RoutingAlgorithm * routingAlgorithm; 
-    SelectionStrategy * selectionStrategy; 
-    
+    RoutingAlgorithm * routingAlgorithm;
+    SelectionStrategy * selectionStrategy;
+
     // Functions
 
     void rxProcess();		// The receiving process
@@ -84,7 +84,7 @@ SC_MODULE(Router)
 		   const unsigned int _max_buffer_size,
 		   GlobalRoutingTable & grt);
 
-    unsigned long getRoutedFlits();	// Returns the number of routed flits 
+    unsigned long getRoutedFlits();	// Returns the number of routed flits
     unsigned int getFlitsCount();	// Returns the number of flits into the router
 
     // Constructor
@@ -101,7 +101,7 @@ SC_MODULE(Router)
 	SC_METHOD(perCycleUpdate);
 	sensitive << reset;
 	sensitive << clock.pos();
-	
+
 	routingAlgorithm = RoutingAlgorithms::get(GlobalParams::routing_algorithm);
 
 	if (routingAlgorithm == 0)
@@ -128,14 +128,15 @@ SC_MODULE(Router)
     int selectionFunction(const vector <int> &directions,
 			  const RouteData & route_data);
     vector < int >routingFunction(const RouteData & route_data);
- 
+
     NoP_data getCurrentNoPData();
     void NoP_report() const;
     int NoPScore(const NoP_data & nop_data, const vector <int> & nop_channels) const;
     int reflexDirection(int direction) const;
-    int getNeighborId(int _id, int direction) const;
+    //int getNeighborId(int _id, int direction) const;
 
   public:
+    int getNeighborId(int _id, int direction) const;
     unsigned int local_drained;
 
     bool inCongestion();

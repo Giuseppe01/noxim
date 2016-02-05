@@ -306,18 +306,64 @@ void GlobalStats::drawGraphviz()
     // draw the network layout and declare nodes
     fprintf(fp,"\n digraph G { graph [layout=dot] ");
 
-    int c=0;
     for (int y = 0; y < GlobalParams::mesh_dim_y; y++)
     {
       fprintf(fp,"\n {rank=same; ");
       for (int x = 0; x < GlobalParams::mesh_dim_x; x++)
       {
-        c++;
-        fprintf(fp,"N%d [shape=circle, fixedsize=true]; ", c);
+        int curr_id = noc->t[x][y]->r->local_id;
+        fprintf(fp,"N%d [shape=circle, fixedsize=true]; ", curr_id);
 
       }
       fprintf(fp," }");
     }
+
+    // draw horizontal edges...
+    for (int y = 0; y < GlobalParams::mesh_dim_y; y++)
+    {
+      for (int x = 0; x < GlobalParams::mesh_dim_x; x++)
+      {
+        int curr_id = noc->t[x][y]->r->local_id;
+
+        if (x != GlobalParams::mesh_dim_x-1)
+        {
+          fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold]",curr_id,curr_id+1);
+
+          //TSegmentId tid = net->t[x][y]->r->disr.getLinkSegmentID(DIRECTION_EAST);
+          //if (tid.isAssigned())
+          //  fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold, label=\"%d.%d\"]",curr_id,curr_id+1,tid.getNode(),tid.getLink());
+          //else if (tid.isFree())
+          //  fprintf(fp,"\nN%d->N%d [dir=none, style=dotted, label=\"\"]",curr_id,curr_id+1);
+          //else if (!tid.isValid())
+          //  fprintf(fp,"\nN%d->N%d [dir=none, style=invis, label=\" \"]",curr_id,curr_id+1);
+          //else assert(false);
+        }
+      }
+    }
+
+    // draw vertical edges...
+    for (int x = 0; x < GlobalParams::mesh_dim_x; x++)
+    {
+      for (int y = 0; y < GlobalParams::mesh_dim_y; y++)
+      {
+        int curr_id = noc->t[x][y]->r->local_id;
+        int south_id = noc->t[x][y]->r->getNeighborId(curr_id,DIRECTION_SOUTH);
+
+        if (y != GlobalParams::mesh_dim_y-1)
+        {
+          fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold]",curr_id,south_id);
+          //TSegmentId tid = net->t[x][y]->r->disr.getLinkSegmentID(DIRECTION_SOUTH);
+          //if (tid.isAssigned())
+          //  fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold, label=\"%d.%d\"]",curr_id,south_id,tid.getNode(),tid.getLink());
+          //else if (tid.isFree())
+          //  fprintf(fp,"\nN%d->N%d [dir=none, style=dotted, label=\"\"]",curr_id,south_id);
+          //else if (!tid.isValid())
+          //  fprintf(fp,"\nN%d->N%d [dir=none, style=invis, label=\" \"]",curr_id,south_id);
+          //else assert(false);
+        }
+      }
+    }
+
 
 
     fprintf(fp,"\n }");
