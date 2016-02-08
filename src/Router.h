@@ -133,8 +133,7 @@ SC_MODULE(Router)
     void NoP_report() const;
     int NoPScore(const NoP_data & nop_data, const vector <int> & nop_channels) const;
     int reflexDirection(int direction) const;
-    //int getNeighborId(int _id, int direction) const;
-
+    
   public:
     int getNeighborId(int _id, int direction) const;
     unsigned int local_drained;

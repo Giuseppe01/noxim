@@ -324,19 +324,11 @@ void GlobalStats::drawGraphviz()
       for (int x = 0; x < GlobalParams::mesh_dim_x; x++)
       {
         int curr_id = noc->t[x][y]->r->local_id;
+        int full_cycles_counter = noc->t[x][y]->r->buffer->full_cycles_counter;
 
         if (x != GlobalParams::mesh_dim_x-1)
         {
-          fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold]",curr_id,curr_id+1);
-
-          //TSegmentId tid = net->t[x][y]->r->disr.getLinkSegmentID(DIRECTION_EAST);
-          //if (tid.isAssigned())
-          //  fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold, label=\"%d.%d\"]",curr_id,curr_id+1,tid.getNode(),tid.getLink());
-          //else if (tid.isFree())
-          //  fprintf(fp,"\nN%d->N%d [dir=none, style=dotted, label=\"\"]",curr_id,curr_id+1);
-          //else if (!tid.isValid())
-          //  fprintf(fp,"\nN%d->N%d [dir=none, style=invis, label=\" \"]",curr_id,curr_id+1);
-          //else assert(false);
+          fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold, label=\"%d\"]",curr_id,curr_id+1,full_cycles_counter);
         }
       }
     }
@@ -348,22 +340,14 @@ void GlobalStats::drawGraphviz()
       {
         int curr_id = noc->t[x][y]->r->local_id;
         int south_id = noc->t[x][y]->r->getNeighborId(curr_id,DIRECTION_SOUTH);
+        int full_cycles_counter = noc->t[x][y]->r->buffer->full_cycles_counter;
 
         if (y != GlobalParams::mesh_dim_y-1)
         {
-          fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold]",curr_id,south_id);
-          //TSegmentId tid = net->t[x][y]->r->disr.getLinkSegmentID(DIRECTION_SOUTH);
-          //if (tid.isAssigned())
-          //  fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold, label=\"%d.%d\"]",curr_id,south_id,tid.getNode(),tid.getLink());
-          //else if (tid.isFree())
-          //  fprintf(fp,"\nN%d->N%d [dir=none, style=dotted, label=\"\"]",curr_id,south_id);
-          //else if (!tid.isValid())
-          //  fprintf(fp,"\nN%d->N%d [dir=none, style=invis, label=\" \"]",curr_id,south_id);
-          //else assert(false);
+          fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold, label=\" %d\"]",curr_id,south_id,full_cycles_counter);
         }
       }
     }
-
 
 
     fprintf(fp,"\n }");

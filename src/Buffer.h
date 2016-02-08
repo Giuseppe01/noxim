@@ -51,20 +51,20 @@ class Buffer {
 
 
     void Print(const char*);
-    
+
     bool deadlockFree();
     void deadlockCheck();
 
 
     inline string name() { return "Buffer";};
 
+    int full_cycles_counter;
 
   private:
 
     bool true_buffer;
 
 
-    int full_cycles_counter;
     int last_front_flit_seq;
 
     unsigned int max_buffer_size;
@@ -75,7 +75,7 @@ class Buffer {
     double hold_time, last_event, hold_time_sum;
     double mean_occupancy;
     int    previous_occupancy;
-    
+
     void SaveOccupancyAndTime();
     void UpdateMeanOccupancy();
 };

@@ -30,6 +30,7 @@ void signalHandler( int signum )
     cout << "(" << sc_time_stamp().to_double() / GlobalParams::clock_period_ps << " sim cycles executed)" << endl;
     GlobalStats gs(n);
     gs.showStats(std::cout, GlobalParams::detailed);
+    gs.drawGraphviz();
 }
 
 int sc_main(int arg_num, char *arg_vet[])
