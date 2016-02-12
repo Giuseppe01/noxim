@@ -295,7 +295,7 @@ double GlobalStats::getStaticPower()
     return power;
 }
 
-void GlobalStats::drawGraphviz()
+void GlobalStats::drawGraphviz(bool onlyMesh, int cyclesAlert)
 {
   FILE * fp;
   string fn = "graph.gv";
@@ -312,8 +312,28 @@ void GlobalStats::drawGraphviz()
       for (int x = 0; x < GlobalParams::mesh_dim_x; x++)
       {
         int curr_id = noc->t[x][y]->r->local_id;
-        fprintf(fp,"N%d [shape=circle, fixedsize=true]; ", curr_id);
+        int n = noc->t[x][y]->r->buffer[DIRECTION_NORTH].full_cycles_counter;
+        int s = noc->t[x][y]->r->buffer[DIRECTION_SOUTH].full_cycles_counter;
+        int e = noc->t[x][y]->r->buffer[DIRECTION_EAST].full_cycles_counter;
+        int w = noc->t[x][y]->r->buffer[DIRECTION_WEST].full_cycles_counter;
 
+        if(onlyMesh)
+        {
+          //Draw only the Mesh
+          fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, label=\"%d}\"]",curr_id,curr_id);
+        }else
+        {
+          if(n > cyclesAlert || s > cyclesAlert || e > cyclesAlert || w > cyclesAlert)
+          {
+            //Node whit high cycles counter, probably deadlock
+            fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, fillcolor=orange, style=filled, label=\"{|%d|}|{%d|{%d}|%d}|{|%d|}\"]",curr_id,w,n,curr_id,s,e);
+          }
+          else
+          {
+            //Normal node
+            fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, label=\"{|%d|} |{ %d |{%d}| %d}|{| %d|}\"]",curr_id,w,n,curr_id,s,e);
+          }
+        }
       }
       fprintf(fp," }");
     }
@@ -324,11 +344,10 @@ void GlobalStats::drawGraphviz()
       for (int x = 0; x < GlobalParams::mesh_dim_x; x++)
       {
         int curr_id = noc->t[x][y]->r->local_id;
-        int full_cycles_counter = noc->t[x][y]->r->buffer->full_cycles_counter;
 
         if (x != GlobalParams::mesh_dim_x-1)
         {
-          fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold, label=\"%d\"]",curr_id,curr_id+1,full_cycles_counter);
+          fprintf(fp,"\nstruct%d->struct%d [dir=none, color=red, style=bold, label=\"\"]",curr_id,curr_id+1);
         }
       }
     }
@@ -340,11 +359,10 @@ void GlobalStats::drawGraphviz()
       {
         int curr_id = noc->t[x][y]->r->local_id;
         int south_id = noc->t[x][y]->r->getNeighborId(curr_id,DIRECTION_SOUTH);
-        int full_cycles_counter = noc->t[x][y]->r->buffer->full_cycles_counter;
 
         if (y != GlobalParams::mesh_dim_y-1)
         {
-          fprintf(fp,"\nN%d->N%d [dir=none, color=red, style=bold, label=\" %d\"]",curr_id,south_id,full_cycles_counter);
+          fprintf(fp,"\nstruct%d->struct%d [dir=none, color=red, style=bold, label=\"\"]",curr_id,south_id);
         }
       }
     }

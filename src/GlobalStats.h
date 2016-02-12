@@ -78,7 +78,7 @@ class GlobalStats {
     // Returns the total power
     double getTotalPower() { return getDynamicPower()+getStaticPower(); }
 
-    void drawGraphviz();
+    void drawGraphviz(bool onlyMesh, int cyclesAlert);
 
     // Shows global statistics
     void showStats(std::ostream & out = std::cout, bool detailed = false);
