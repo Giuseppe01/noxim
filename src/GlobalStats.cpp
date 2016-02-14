@@ -320,18 +320,18 @@ void GlobalStats::drawGraphviz(bool onlyMesh, int cyclesAlert)
         if(onlyMesh)
         {
           //Draw only the Mesh
-          fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, label=\"%d}\"]",curr_id,curr_id);
+          fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, label=\"N%d}\"]",curr_id,curr_id);
         }else
         {
           if(n > cyclesAlert || s > cyclesAlert || e > cyclesAlert || w > cyclesAlert)
           {
             //Node whit high cycles counter, probably deadlock
-            fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, fillcolor=orange, style=filled, label=\"{|%d|}|{%d|{%d}|%d}|{|%d|}\"]",curr_id,w,n,curr_id,s,e);
+            fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, fillcolor=orange, style=filled, label=\"{|%d|}|{%d|{N%d}|%d}|{|%d|}\"]",curr_id,w,n,curr_id,s,e);
           }
           else
           {
             //Normal node
-            fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, label=\"{|%d|} |{ %d |{%d}| %d}|{| %d|}\"]",curr_id,w,n,curr_id,s,e);
+            fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, label=\"{|%d|} |{ %d |{N%d}| %d}|{| %d|}\"]",curr_id,w,n,curr_id,s,e);
           }
         }
       }
