@@ -317,23 +317,25 @@ void GlobalStats::drawGraphviz(bool onlyMesh, int cyclesAlert)
         int e = noc->t[x][y]->r->buffer[DIRECTION_EAST].full_cycles_counter;
         int w = noc->t[x][y]->r->buffer[DIRECTION_WEST].full_cycles_counter;
 
-        if(onlyMesh)
+        char *label_n = (char *)"white";
+        char *label_s = (char *)"white";
+        char *label_e = (char *)"white";
+        char *label_w = (char *)"white";
+
+        if(!onlyMesh)
         {
-          //Draw only the Mesh
-          fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, label=\"N%d}\"]",curr_id,curr_id);
-        }else
-        {
-          if(n > cyclesAlert || s > cyclesAlert || e > cyclesAlert || w > cyclesAlert)
-          {
-            //Node whit high cycles counter, probably deadlock
-            fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, fillcolor=orange, style=filled, label=\"{|%d|}|{%d|{N%d}|%d}|{|%d|}\"]",curr_id,w,n,curr_id,s,e);
-          }
-          else
-          {
-            //Normal node
-            fprintf(fp,"\nstruct%d [shape=record, fixedsize=true, fontsize=10, label=\"{|%d|} |{ %d |{N%d}| %d}|{| %d|}\"]",curr_id,w,n,curr_id,s,e);
-          }
+          if(n > cyclesAlert)
+            label_n = (char *)"orange";
+          if(s > cyclesAlert)
+            label_s = (char *)"orange";
+          if(e > cyclesAlert)
+            label_e = (char *)"orange";
+          if(w > cyclesAlert)
+            label_w = (char *)"orange";
         }
+
+        fprintf(fp,"\nstruct%d [shape=none, label=<<table BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\"><tr><td bgcolor=\"white\"></td><td bgcolor=\"%s\">%4d</td><td bgcolor=\"white\"></td></tr><tr><td bgcolor=\"%s\">%4d</td><td bgcolor=\"white\">N%4d</td><td bgcolor=\"%s\">%4d</td></tr><tr><td bgcolor=\"white\"></td><td bgcolor=\"%s\">%4d</td><td bgcolor=\"white\"></td></tr></table>>]",curr_id,label_n,n,label_w,w,curr_id,label_e,e,label_s,s);
+
       }
       fprintf(fp," }");
     }
@@ -347,7 +349,28 @@ void GlobalStats::drawGraphviz(bool onlyMesh, int cyclesAlert)
 
         if (x != GlobalParams::mesh_dim_x-1)
         {
-          fprintf(fp,"\nstruct%d->struct%d [dir=none, color=red, style=bold, label=\"\"]",curr_id,curr_id+1);
+          int e = noc->t[x][y]->r->buffer[DIRECTION_EAST].full_cycles_counter;
+          int w = noc->t[x+1][y]->r->buffer[DIRECTION_WEST].full_cycles_counter;
+          char *arrow = (char *)"dir=none,";
+          char *style = (char *)"0.5";
+
+          if(!onlyMesh && e > cyclesAlert)
+          {
+            arrow = (char *)"dir=back,";
+            style = (char *)"2.5";
+          }
+          if(!onlyMesh && w > cyclesAlert)
+          {
+            arrow = (char *)"";
+            style = (char *)"2.5";
+          }
+          if (!onlyMesh && e > cyclesAlert && w > cyclesAlert)
+          {
+            arrow = (char *)"arrowhead=diamond,arrowtail=normal,";
+            style = (char *)"2";
+          }
+
+          fprintf(fp,"\nstruct%d->struct%d [%s color=red, arrowsize=%s, label=\"\"]",curr_id,curr_id+1,arrow,style);
         }
       }
     }
@@ -362,7 +385,28 @@ void GlobalStats::drawGraphviz(bool onlyMesh, int cyclesAlert)
 
         if (y != GlobalParams::mesh_dim_y-1)
         {
-          fprintf(fp,"\nstruct%d->struct%d [dir=none, color=red, style=bold, label=\"\"]",curr_id,south_id);
+          int s = noc->t[x][y]->r->buffer[DIRECTION_SOUTH].full_cycles_counter;
+          int n = noc->t[x][y+1]->r->buffer[DIRECTION_NORTH].full_cycles_counter;
+          char *arrow = (char *)"dir=none,";
+          char *style = (char *)"0.5";
+
+          if(!onlyMesh && s > cyclesAlert)
+          {
+            arrow = (char *)"dir=back,";
+            style = (char *)"2.5";
+          }
+          if(!onlyMesh && n > cyclesAlert)
+          {
+            arrow = (char *)"";
+            style = (char *)"2.5";
+          }
+          if (!onlyMesh && s > cyclesAlert && n > cyclesAlert)
+          {
+            arrow = (char *)"arrowhead=diamond,arrowtail=normal,";
+            style = (char *)"2";
+          }
+
+          fprintf(fp,"\nstruct%d->struct%d [%s color=red, arrowsize=%s, label=\"\"]",curr_id,south_id,arrow,style);
         }
       }
     }
